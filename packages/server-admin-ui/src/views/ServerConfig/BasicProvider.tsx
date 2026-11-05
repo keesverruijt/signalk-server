@@ -65,6 +65,7 @@ interface ProviderOptions {
   systemInstance?: number
   // N2kIpGateway-specific.
   actAsCanDevice?: boolean
+  canPacketMode?: boolean
   format?: string
   // Maretron IPG 100 — optional CONNECT password.
   password?: string
@@ -1557,6 +1558,44 @@ function ActAsCanDeviceInput({
   )
 }
 
+function CanPacketModeInput({
+  value,
+  onChange
+}: {
+  value: ProviderOptions
+  onChange: OnChangeHandler
+}) {
+  return (
+    <Form.Group as={Row} className="mb-3">
+      <Col xs="3" md="3">
+        <Form.Label htmlFor="provider-canPacketMode">
+          CAN Packet Mode
+        </Form.Label>
+      </Col>
+      <Col xs="2" md="3">
+        <Form.Label className="switch switch-text switch-primary">
+          <input
+            type="checkbox"
+            id="provider-canPacketMode"
+            name="options.canPacketMode"
+            className="switch-input"
+            onChange={(event) => onChange(event)}
+            checked={value.canPacketMode === true}
+          />
+          <span className="switch-label" data-on="Yes" data-off="No" />
+          <span className="switch-handle" />
+        </Form.Label>
+      </Col>
+      <Col xs="7" md="6" className="form-text text-muted small">
+        An Actisense <strong>NGX</strong> only: pass raw CAN frames, and have
+        the server claim its own N2K address on the bus. The gateway keeps the
+        mode, and is set back when this is turned off. An NGT-1 has no such
+        mode, and is used as before.
+      </Col>
+    </Form.Group>
+  )
+}
+
 function CreateDeviceInput({
   value,
   onChange
@@ -1956,6 +1995,9 @@ function NMEA2000({ value, onChange, hasAnalyzer }: TypeComponentProps) {
             onChange={onChange}
           />
         </div>
+      )}
+      {value.options.type === 'ngt-1-canboatjs' && (
+        <CanPacketModeInput value={value.options} onChange={onChange} />
       )}
       {(value.options.type === 'ngt-1-canboatjs' ||
         value.options.type === 'ikonvert-canboatjs' ||
